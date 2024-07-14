@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	viper.AddConfigPath("../tests")
+	viper.AddConfigPath("../../tests")
 
 	// viper.AutomaticEnv()
 	viper.SetConfigName("test")
@@ -19,7 +19,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	autoenv.New().Execute()
-	fmt.Printf("Evaluation of WEBSITE: %s", viper.GetString("website"))
-
+	autoenv.New().Execute() // interpolates all the placeholder variables
+	fmt.Println(viper.GetString("WEBSITE")) // see the change
 }
