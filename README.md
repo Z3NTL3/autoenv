@@ -28,7 +28,7 @@ More documentation [here](https://pkg.go.dev/os#Expand)
 
 #### Installation
 
-> `go get z3ntl3.com/autoenv`
+> `go get z3ntl3.com/autoenv/v2`
 
 #### After installation
 
