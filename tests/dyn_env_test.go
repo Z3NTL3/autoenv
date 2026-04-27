@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/spf13/viper"
-	"z3ntl3.com/autoenv/pkg/autoenv"
+	"z3ntl3.com/autoenv/v2/pkg/autoenv"
 )
 
 func Test_LoadEnv(t *testing.T) {
@@ -20,7 +20,7 @@ func Test_LoadEnv(t *testing.T) {
 	}
 
 	autoenv.New().Execute()
-	t.Logf("all settings:", viper.GetViper().AllSettings())
+	t.Logf("all settings: %+v", viper.GetViper().AllSettings())
 	t.Logf("Evaluation of WEBSITE: '%s'", viper.GetString("website"))
 }
 

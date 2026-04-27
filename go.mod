@@ -1,4 +1,4 @@
-module z3ntl3.com/autoenv
+module z3ntl3.com/autoenv/v2
 
 go 1.23.0
 

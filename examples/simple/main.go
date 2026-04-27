@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/spf13/viper"
-	"z3ntl3.com/autoenv/pkg/autoenv"
+	"z3ntl3.com/autoenv/v2/pkg/autoenv"
 )
 
 func main() {
@@ -19,6 +19,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	autoenv.New().Execute() // interpolates all the placeholder variables
+	autoenv.New().Execute()                 // interpolates all the placeholder variables
 	fmt.Println(viper.GetString("WEBSITE")) // see the change
 }

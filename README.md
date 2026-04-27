@@ -37,7 +37,7 @@ You can just import it in your project and use it.
 ```go
 package main
 
-import "z3ntl3.com/autoenv"
+import "z3ntl3.com/autoenv/v2"
 ```
 
 ### Example
@@ -61,7 +61,7 @@ import (
 	"log"
 
 	"github.com/spf13/viper"
-	"z3ntl3.com/autoenv/pkg/autoenv"
+	"z3ntl3.com/autoenv/v2/pkg/autoenv"
 )
 
 func main(){
