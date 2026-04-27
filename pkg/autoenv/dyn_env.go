@@ -11,29 +11,15 @@ import (
 	"github.com/spf13/viper"
 )
 
-// AutoEnv instance
-type AutoEnv struct{}
-
-// Creates a new AutoEnv instance for env interpolation and substitution.
-// [Viper] is used under the hood, parse and load your configuration with it.
-//
-// AutoEnv works with any data format [Viper] supports.
-//
-// See ./tests for examples
-//
-// [Viper]: https://github.com/spf13/viper
-func New() *AutoEnv {
-	return &AutoEnv{}
-}
-
-// Executes is custom implementation around [os.Expand] with Viper mappings via [github.com/spf13/viper.Set], [github.com/spf13/viper.AllKeys] to perform interpolation and variable substitution.
+// Provision environment and configuration files load by Viper, in sense of performing variable expansion
+// This is a custom implementation around [os.Expand] with Viper mappings via [github.com/spf13/viper.Set], [github.com/spf13/viper.AllKeys] to perform interpolation and variable substitution.
 //
 // Variable mappings should be used in the form of
 //   - $var
 //   - or ${VAR}
 //
 // where var is case-sensitive, therefore $var or ${var} and $VAR or ${VAR} are different.
-func (env *AutoEnv) Execute() {
+func Provision() {
 	keys := viper.AllKeys()
 
 	for _, key := range keys {

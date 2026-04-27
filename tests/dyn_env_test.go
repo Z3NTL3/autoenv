@@ -19,7 +19,7 @@ func Test_LoadEnv(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	autoenv.New().Execute()
+	autoenv.Provision()
 	t.Logf("all settings: %+v", viper.GetViper().AllSettings())
 	t.Logf("Evaluation of WEBSITE: '%s'", viper.GetString("website"))
 }
