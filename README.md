@@ -4,24 +4,36 @@
     <img src="./img/autoenv_nobg.png" width="280" style="border-radius: 4px;"><br>  
 </div>
 
-
 # AutoEnv
 
-Dynamically interpolate placeholder variables in any config file. Made especially to be a plugin for [Viper](https://github.com/spf13/viper).
+AutoEnv is a lightweight Viper plugin that handles variable interpolation and substitution, while Viper manages the configuration files.
+
+Implementation is very minimal, Viper is the only dependency in this package. It leverages [os.Expand](https://pkg.go.dev/os#Expand) together with Viper managed environment and configuration variables, enabling data format–agnostic variable interpolation
+
+Some known supported formats are TOML, JSON and YAML. Check further with [Viper](https://github.com/spf13/viper) for more details.
 
 #### Features
-- Very easy to use
+
+- Ease of use
 - Deep interpolation/substitution of variables
-- Works with [Viper](https://github.com/spf13/viper)
+- Plugin for [Viper](https://github.com/spf13/viper)
 - Elegant
-- Ability to change the left/right delimiters for convenience [How?](#how-to-change-delimiters)
+- Minimal implementation
+
+### Var interpolation/substitution forms
+
+Either $var or ${var} where var is case sensitive, therefore ${var} or $var and ${VAR} or $VAR are different.
+
+More documentation [here](https://pkg.go.dev/os#Expand)
 
 #### Installation
-> ``go get z3ntl3.com/autoenv``
 
-#### After that
+> `go get z3ntl3.com/autoenv`
+
+#### After installation
 
 You can just import it in your project and use it.
+
 ```go
 package main
 
@@ -36,7 +48,7 @@ Let's consider the following as a `.env` file:
 NAME="z3ntl3"
 DOMAIN="com"
 
-WEBSITE="{NAME}.{DOMAIN}"
+WEBSITE="${NAME}.${DOMAIN}"
 ```
 
 And this code:
@@ -67,51 +79,11 @@ func main(){
 	fmt.Println(viper.GetString("WEBSITE")) // see the change
 }
 ```
-### Output
-``WEBSITE="{NAME}.{DOMAIN}"`` turns into ``z3ntl3.com``.
-
-
-### How to change delimiters
-Have this example ENV
-
-```env
-NAME="z3ntl3"
-DOMAIN="com"
-
-WEBSITE="<NAME>.<DOMAIN>"
-```
-
-And this code:
-
-```go
-package main
-
-import (
-	"fmt"
-	"log"
-
-	"github.com/spf13/viper"
-	"z3ntl3.com/autoenv/pkg/autoenv"
-)
-
-func main() {
-	viper.AddConfigPath("../../tests")
-
-	// viper.AutomaticEnv()
-	viper.SetConfigName("test2")
-	viper.SetConfigType("env")
-
-	if err := viper.ReadInConfig(); err != nil {
-		log.Fatal(err)
-	}
-
-	autoenv.New().SetDelim("<", ">").Execute() // interpolates all the placeholder variables with the delims
-	fmt.Println(viper.GetString("WEBSITE")) // see the change
-}
-```
 
 ### Output
-``WEBSITE="<NAME>.<DOMAIN>"`` turns into ``z3ntl3.com``.
+
+`WEBSITE="${NAME}.${DOMAIN}"` turns into `z3ntl3.com`.
 
 #### License
+
 [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)

@@ -1,101 +1,47 @@
+/*
+AutoEnv is a lightweight Viper plugin that handles variable interpolation and substitution, while Viper manages the configuration files.
+
+Therefore AutoEnv is data format agnostic, known supported formats are TOML, JSON and YAML
+*/
 package autoenv
 
 import (
-	"fmt"
-	"regexp"
-	"strings"
+	"os"
 
 	"github.com/spf13/viper"
 )
 
-// AutoEnv  struct defines a structure with two fields,
-// LDelim and RDelim, which represent the left and right delimiters for placeholder variables in configuration files.
-type AutoEnv struct{
-	LDelim string
-	RDelim string
-	matcher *regexp.Regexp
+// AutoEnv instance
+type AutoEnv struct{}
+
+// Creates a new AutoEnv instance for env interpolation and substitution.
+// [Viper] is used under the hood, parse and load your configuration with it.
+//
+// AutoEnv works with any data format [Viper] supports.
+//
+// See ./tests for examples
+//
+// [Viper]: https://github.com/spf13/viper
+func New() *AutoEnv {
+	return &AutoEnv{}
 }
 
-// Creates a new instance of [autoenv.AutoEnv].
-// This does also compile the regexp to be used later.
+// Executes is custom implementation around [os.Expand] with Viper mappings via [github.com/spf13/viper.Set], [github.com/spf13/viper.AllKeys] to perform interpolation and variable substitution.
 //
-// Will panic if it cannot compile the regexp.
-func New() *AutoEnv { 
-	ld := regexp.QuoteMeta("{")
-	rd := regexp.QuoteMeta("}")
-
-	return &AutoEnv{
-		LDelim: ld,
-		RDelim: rd,
-		matcher: regexp.MustCompile(fmt.Sprintf(`%s(\w+)%s`, ld, rd)),
-	} 
-}
-
-// SetDelim sets the left and right delimiters for the AutoEnv struct.
+// Variable mappings should be used in the form of
+//   - $var
+//   - or ${VAR}
 //
-// Example:
-// # your env
-// NAME="z3ntl3"
-// HELLO="Hello {NAME}"
-// 
-// Here the '{' is the left delim and '}' is the right delim.	
-//
-// Parameters:
-// - left_delim: the left delimiter to be set.
-// - right_delim: the right delimiter to be set.
-//
-// Returns the instance for conveniently chaining methods 
-// and will panic if it cannot compile the regexp.
-func (env *AutoEnv) SetDelim(left_delim, right_delim string) *AutoEnv {
-	env.LDelim  = regexp.QuoteMeta(left_delim)
-	env.RDelim = regexp.QuoteMeta(right_delim)
-	env.matcher = regexp.MustCompile(fmt.Sprintf(`%s(\w+)%s`, env.LDelim, env.RDelim))
-
-	return env
-}
-
-// ResetDelims resets the left and right delimiters for the AutoEnv struct.
-//
-// Returns the instance for convenience it ill chain methods. Will panic if it cannot compile the regexp.
-func (env *AutoEnv) ResetDelims() *AutoEnv {
-	env.LDelim  = regexp.QuoteMeta("{")
-	env.RDelim = regexp.QuoteMeta("}")
-	env.matcher = regexp.MustCompile(fmt.Sprintf(`%s(\w+)%s`, env.LDelim, env.RDelim))
-
-	return env
-}
-
-// Execute iterates over all the keys in the viper configuration and dynamically updates all
-// placeholder variables
+// where var is case-sensitive, therefore $var or ${var} and $VAR or ${VAR} are different.
 func (env *AutoEnv) Execute() {
 	keys := viper.AllKeys()
 
 	for _, key := range keys {
-		value := viper.GetString(key)
-
-		changed := env.interpolate(value)
-		if value != changed {
-			viper.Set(key, changed)
-		}
+		var_ := viper.GetString(key)
+		// interpolation magic happens down here
+		expanded := os.Expand(var_, func(v string) string {
+			return viper.GetString(v)
+		})
+		viper.Set(key, expanded)
 	}
-}
-
-func (env *AutoEnv) interpolate(value string) string {
-	delims := env.matcher.FindAllStringSubmatch(value, -1)
-	for _, delim := range delims {
-		placeholder := delim[0]
-		variable := delim[1]
-
-		var_value := viper.GetString(variable)
-		if strings.ContainsAny(var_value, fmt.Sprintf("%s%s", env.LDelim, env.RDelim)){ 
-			if strings.Contains(var_value, placeholder){
-				var_value = strings.Split(var_value, placeholder)[0]
-			} 
-
-			var_value = env.interpolate(var_value)
-		}
-
-		value = strings.ReplaceAll(value, placeholder, var_value)
-	}
-	return value
 }
