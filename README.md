@@ -61,7 +61,7 @@ import (
 	"log"
 
 	"github.com/spf13/viper"
-	"z3ntl3.com/autoenv/v2/pkg/autoenv"
+	"z3ntl3.com/autoenv/v2"
 )
 
 func main(){
