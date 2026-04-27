@@ -19,6 +19,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	autoenv.New().Execute()                 // interpolates all the placeholder variables
+	autoenv.Provision()                     // interpolates all the placeholder variables
 	fmt.Println(viper.GetString("WEBSITE")) // see the change
 }
